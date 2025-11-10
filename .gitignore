@@ -1,0 +1,84 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos de entorno virtual
+venv/
+env/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Archivos de configuración de IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos de dependencias y paquetes
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+
+# Archivos de instalación / setup
+*.manifest
+*.spec
+
+# Logs y bases de datos locales
+*.log
+*.sqlite3
+*.db
+
+# Archivos de pruebas
+.coverage
+.tox/
+.nox/
+.pytest_cache/
+htmlcov/
+coverage.xml
+
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+~$*
+
+# Archivos de Jupyter
+.ipynb_checkpoints
+
+# Archivos de entorno / configuración local
+*.env
+.env.local
+.env.*.local
+
+# Archivos de caché o compilados por Cython
+*.pyd
+*.pyo
+*.so
+*.dll
+
+# Archivos generados por herramientas
+migrations/
+__pycache__/
+site/
+staticfiles/
+media/
+
+# Documentación generada
+docs/_build/
+doc/_build/
+
+# Carpetas de backups o pruebas locales
+backup/
+tmp/
+temp/
