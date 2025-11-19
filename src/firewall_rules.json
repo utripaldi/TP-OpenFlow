@@ -1,0 +1,37 @@
+{
+    "selected_switches": [1],
+
+    "rules": [
+        {
+            "name": "Block destination port 80 (TCP)",
+            "dl_type": 2048,
+            "nw_proto": 6,
+            "tp_dst": 80
+        },
+        {
+            "name": "Block destination port 80 (UDP)",
+            "dl_type": 2048,
+            "nw_proto": 17,
+            "tp_dst": 80
+        },
+        {
+            "name": "Block UDP from host 10.0.0.1 to port 5001",
+            "dl_type": 2048,
+            "nw_proto": 17,
+            "nw_src": "10.0.0.1",
+            "tp_dst": 5001
+        },
+        {
+            "name": "Block communication 10.0.0.1 → 10.0.0.2",
+            "dl_type": 2048,
+            "nw_src": "10.0.0.1",
+            "nw_dst": "10.0.0.2"
+        },
+        {
+            "name": "Block communication 10.0.0.2 → 10.0.0.1",
+            "dl_type": 2048,
+            "nw_src": "10.0.0.2",
+            "nw_dst": "10.0.0.1"
+        }
+    ]
+}
