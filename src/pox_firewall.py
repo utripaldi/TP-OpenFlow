@@ -28,10 +28,13 @@ class Firewall(EventMixin):
         log.debug("Enabling Firewall Module")
 
     def _handle_ConnectionUp(self, event):
-        log.info("Switch connected: DPID={}".format(event.dpid))
-        if event.dpid == 1:
-            log.info("Firewall activated at switch s1")
-            self.add_firewall_rules(event.connection)
+        dpid = event.dpid
+        log.info(f"Switch connected: DPID={dpid}")
+        if dpid in self.selected_switches:
+            log.info(f"Firewall activated on switch s{dpid}")
+            self.apply_firewall_rules(event.connection)
+        else:
+            log.info(f"Switch s{dpid} not selected for firewall")
 
     def add_firewall_rules(self, connection):
         self.block_port_80(connection)
