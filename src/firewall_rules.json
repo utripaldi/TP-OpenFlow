@@ -22,13 +22,13 @@
             "tp_dst": 5001
         },
         {
-            "name": "Block communication 10.0.0.1 → 10.0.0.2",
+            "name": "Block communication 10.0.0.1 -> 10.0.0.2",
             "dl_type": 2048,
             "nw_src": "10.0.0.1",
             "nw_dst": "10.0.0.2"
         },
         {
-            "name": "Block communication 10.0.0.2 → 10.0.0.1",
+            "name": "Block communication 10.0.0.2 -> 10.0.0.1",
             "dl_type": 2048,
             "nw_src": "10.0.0.2",
             "nw_dst": "10.0.0.1"

@@ -15,10 +15,10 @@ class ChainTopo(Topo):
         if n < 1:
             raise ValueError("The number of switches 'n' must be >= 1")
 
-        left_host_1 = self.addHost('hL1')
-        left_host_2 = self.addHost('hL2')
-        right_host_1 = self.addHost('hR1')
-        right_host_2 = self.addHost('hR2')
+        left_host_1 = self.addHost('hL1', ip='10.0.0.1/24')
+        left_host_2 = self.addHost('hL2', ip='10.0.0.2/24')
+        right_host_1 = self.addHost('hR1', ip='10.0.0.3/24')
+        right_host_2 = self.addHost('hR2', ip='10.0.0.4/24')
 
         switches = []
         for i in range(n):

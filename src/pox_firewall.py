@@ -4,84 +4,66 @@ import pox.openflow.libopenflow_01 as of
 from pox.lib.revent import *
 from pox.lib.util import dpidToStr
 from pox.lib.addresses import EthAddr
+from pox.lib.addresses import IPAddr
 from collections import namedtuple
 import os
 
 log = core.getLogger()
+RULES_FILE = os.path.join(os.path.dirname(__file__), "firewall_rules.json")
 
 class Firewall(EventMixin):
     def __init__(self):
-        self.listenTo(core.openflow)
-        log.debug("Enabling Firewall Module")
-    
-    def __init__(self):
-        # Load rules
-        with open("firewall_rules.json", "r") as f:
-            self.config = json.load(f)
+        try:
+            with open(RULES_FILE, "r") as f:
+                self.config = json.load(f)
+        except Exception as e:
+            log.error("Cannot load firewall rules: {}".format(e))
+            self.config = {}
 
         self.selected_switches = self.config.get("selected_switches", [])
         self.rules = self.config.get("rules", [])
 
-        # Register for OpenFlow events
         self.listenTo(core.openflow)
-
-        log.debug("Enabling Firewall Module")
+        log.debug("Firewall module initialized with rules: {}".format(self.rules))
 
     def _handle_ConnectionUp(self, event):
         dpid = event.dpid
-        log.info(f"Switch connected: DPID={dpid}")
+        log.info("Switch connected: DPID={}".format(dpid))
         if dpid in self.selected_switches:
-            log.info(f"Firewall activated on switch s{dpid}")
-            self.apply_firewall_rules(event.connection)
+            log.info("Firewall activated on switch s{}".format(dpid))
+            self.add_firewall_rules(event.connection)
         else:
-            log.info(f"Switch s{dpid} not selected for firewall")
+            log.info("Switch s{} not selected for firewall".format(dpid))
 
     def add_firewall_rules(self, connection):
-        self.block_port_80(connection)
+        log.info("Applying dynamic firewall rules from JSON...")
 
-        self.block_udp_traffic(connection)
+        for rule in self.rules:
+            msg = of.ofp_flow_mod()
 
-        self.block_hl1_hl2_traffic(connection)
+            if "dl_type" in rule:
+                msg.match.dl_type = rule["dl_type"]
+            if "nw_proto" in rule:
+                msg.match.nw_proto = rule["nw_proto"]
+            if "nw_src" in rule:
+                try:
+                    msg.match.nw_src = IPAddr(rule["nw_src"])
+                except:
+                    log.error("Invalid IP format in nw_src: {}".format(rule["nw_src"]))
 
-    def block_port_80(self, connection):
-        msg = of.ofp_flow_mod()
-        msg.match.dl_type = 0x0800
-        msg.match.nw_proto = 6
-        msg.match.tp_dst = 80
-        connection.send(msg)
+            if "nw_dst" in rule:
+                try:
+                    msg.match.nw_dst = IPAddr(rule["nw_dst"])
+                except:
+                    log.error("Invalid IP format in nw_dst: {}".format(rule["nw_dst"]))
+            if "tp_dst" in rule:
+                msg.match.tp_dst = rule["tp_dst"]
+            if "tp_src" in rule:
+                msg.match.tp_src = rule["tp_src"]
 
-        msg = of.ofp_flow_mod()
-        msg.match.dl_type = 0x0800
-        msg.match.nw_proto = 17
-        msg.match.tp_dst = 80
-        connection.send(msg)
-
-        log.info("Firewall: Blocked traffic to port 80")
-
-    def block_udp_traffic(self, connection):
-        msg = of.ofp_flow_mod()
-        msg.match.dl_type = 0x0800
-        msg.match.nw_proto = 17
-        msg.match.tp_dst = 5001
-        msg.match.nw_src = "10.0.0.1"
-        connection.send(msg)
-        log.info("Firewall: Blocked traffic UDP from port 5001 with MAC 00:00:00:00:00:01")
-
-    def block_hl1_hl2_traffic(self, connection):
-        msg = of.ofp_flow_mod()
-        msg.match.dl_type = 0x0800
-        msg.match.nw_src = "10.0.0.1"
-        msg.match.nw_dst = "10.0.0.2"
-        connection.send(msg)
-
-        msg = of.ofp_flow_mod()
-        msg.match.dl_type = 0x0800
-        msg.match.nw_src = "10.0.0.2"
-        msg.match.nw_dst = "10.0.0.1"
-        connection.send(msg)
-
-        log.info("Firewall: blocked communication between 10.0.0.1 and 10.0.0.2")
-
+            connection.send(msg)
+            
+            log.info("Rule applied: {}".format(rule.get("name", "Unnamed rule")))
 
 def launch():
     core.registerNew(Firewall)
