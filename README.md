@@ -28,7 +28,21 @@ $ python2 ./pox.py log.level --DEBUG openflow.of_01 forwarding.l2_learning pox_f
 Terminal 2: (desde la carpeta donde se encuentra este repo)
 
 ```
-$ sudo python3 ./src/init_mininet.py 
+$ sudo python3 ./src/init_mininet.py [-n/--n <# SWITCHES>]
+```
+
+## Ejecución de los tests automáticos
+
+Terminal 1: (desde la carpeta donde se encuentra pox)
+
+```
+$ export PYTHONPATH=$PYTHONPATH:<ruta a la carpeta de este repo>/src/
+$ python2 ./pox.py log.level --DEBUG openflow.of_01 forwarding.l2_learning pox_firewall
 ```
 
 
+Terminal 2: (desde la carpeta donde se encuentra este repo)
+
+```
+$ sudo python3 ./src/test_firewall.py [-n/--n <# SWITCHES>]
+```
